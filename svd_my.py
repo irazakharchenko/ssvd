@@ -1,6 +1,8 @@
 import numpy as np
 from math import sqrt
-
+import PIL.Image
+import pylab as pl
+import matplotlib.cm as cm
 
 def sorterForEigenValuesAndVectors(val, vect):
     """
@@ -36,26 +38,35 @@ def make_U(sigm, matr, vect):
 
 def svd(a, r):
     A = np.array(a)
+    print(A)
     ATA = np.dot(A.T, A)
+    print(ATA)
     eig_val, eig_vect = np.linalg.eig(ATA)
     # sort values vectors, make diag matrix
     eig_val, eig_vect_t = sorterForEigenValuesAndVectors(eig_val, eig_vect.T)
     # print(eig_val,'\n', eig_vect)
-    min_len = min(r, len(eig_val))
+    min_len = r
     VT = eig_vect_t[:min_len, :]
-    eig_val = np.array([x for x in eig_val if x > 1.e-8])[:min_len]
+    print("\nVT", np.shape(VT))
+    eig_val = np.array([x for x in eig_val if abs(x) > 1.e-8])[:min_len]
     # print(eig_vect)
-    eig_vect_t = eig_vect_t[:len(eig_val), :]
+    #eig_vect_t = eig_vect_t[:len(eig_val), :]
     # print(eig_vect_t)
-    eig_vect = eig_vect_t.T
+    eig_vect = eig_vect_t[:len(eig_val), :].T
     # print(eig_vect)
-    S = np.array([sqrt(x) for x in eig_val])
-    E = makeDiagonalFromValues(S, r)
+    S = np.array([sqrt(abs(x))%256 for x in eig_val])
+    E = makeDiagonalFromValues(S, np.shape(VT)[0])
     # print(E, '\n', VT)
 
     U = make_U(S, A, eig_vect)
-    print(U, "\nE", E, "\nVT", VT)
+    print(np.shape(U), "\nE", np.shape(E), "\nVT", np.shape(VT))
     UEVT = np.dot(np.dot(U, E), VT)
     print("A", A, "\nmaybe A", UEVT)
+    pl.imshow(A, cmap=cm.Greys_r)
+    pl.show()
+    pl.imshow(UEVT, cmap=cm.Greys_r)
+    pl.show()
 
-svd([[3,2,2], [2,3,-2]], 1)
+image = PIL.Image.open('foto/Lenna.jpg')
+im_grey = image.convert('L')
+svd([[3,2,2], [2,3,-2]], 5)

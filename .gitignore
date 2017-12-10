@@ -1,1 +1,6 @@
 .idea/
+svd.py
+utils.py
+foto/
+utils.pyc
+.gitignore

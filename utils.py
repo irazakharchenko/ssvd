@@ -1,8 +1,9 @@
 
-import _pickle as cPickle
+import  cPickle
 import math
 import numpy
 import scipy.sparse
+from scipy.linalg.lapack import get_lapack_funcs
 
 from scipy.linalg.lapack import get_lapack_funcs
 
@@ -62,7 +63,8 @@ def nfs_broadcast_var(v):
 
 
 def nfs_load_var(p):
+
     f = open(p, 'rb')
     return cPickle.load(f)
 
-#print()
+#nfs_load_var("foto/Lenna.jpg")

@@ -42,30 +42,21 @@ def make_U(sigm, matr, vect, rank):
 
 def svd(a, r):
     A = np.array(a)
-
     ATA = np.dot(A.T, A)
-
     eig_val, eig_vect = np.linalg.eig(ATA)
     # sort values vectors, make diag matrix
     eig_val, eig_vect_t = sorterForEigenValuesAndVectors(eig_val, eig_vect.T)
-
     min_len = r
-
     VT = eig_vect_t[:min_len, :]
-
     eig_val = np.array([x for x in eig_val if x > 1.e-8])
-
     eig_vect = (eig_vect_t[:len(eig_val), :]).T
     S = np.array([math_sqrt(x) for x in eig_val])
     E = makeDiagonalFromValues(S, np.shape(VT)[0], min_len)
-
     U = make_U(S, A, eig_vect, min_len)
     print("U", np.shape(U), "\nE", np.shape(E), "\nVT", np.shape(VT))
-    print("U", (U), "\nE", (E), "\nVT", (VT))
     UE = np.dot(U, E)
     UEVT = np.dot(UE, VT)
     print("A", A, "\nmaybe A", np.real(UEVT))
-    print()
     pl.imshow(A, cmap=cm.Greys_r)
     pl.show()
     pl.imshow(np.real(UEVT), cmap=cm.Greys_r)

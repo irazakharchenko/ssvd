@@ -1,10 +1,12 @@
 import numpy as np
 from math import sqrt as math_sqrt
 
-import PIL.Image
+
 import pylab as pl
 import matplotlib.cm as cm
 from random import randint
+from skimage import color
+from skimage import io
 
 
 def sorterForEigenValuesAndVectors(val, vect):
@@ -63,15 +65,6 @@ def svd(a, r):
     pl.show()
 
 
-image = PIL.Image.open('foto/Lenna.jpg')
-im_grey = image.convert('L')
-l = []
-for i in range(4):
-    li = []
-    for j in range(10):
-        li.append(randint(0, 40))
-    l.append(li)
 
-svd(im_grey, 20)
-# svd([[3,2,2],[2,3,-2]], 3)
-# svd(l, 2)
+img = color.rgb2gray(io.imread('foto/5.jpg'))
+svd(img, 20)

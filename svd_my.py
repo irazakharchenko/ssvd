@@ -1,5 +1,5 @@
 import numpy as np
-from math import sqrt as math_sqrt
+from math import sqrt as math_sqrt, ceil
 
 
 import pylab as pl
@@ -59,12 +59,43 @@ def svd(a, r):
     UE = np.dot(U, E)
     UEVT = np.dot(UE, VT)
     print("A", A, "\nmaybe A", np.real(UEVT))
-    pl.imshow(A, cmap=cm.Greys_r)
+    #pl.imshow(A, cmap=cm.Greys_r)
+    #pl.show()
+    #pl.imshow(np.real(UEVT), cmap=cm.Greys_r)
+    #pl.show()
+    return np.real(UEVT)
+
+def ssvd(a, r):
+    # X[i//n + n(i % n)][j//n + n(j % n)]
+    n = ceil(math_sqrt(max(len(a), len(a[0]))))
+    X = []
+    for i in range(n**2):
+        X.append([0]*(n**2))
+    for i in range(len(a)):
+        for j in range(len(a[i])):
+
+            X[i//n + n * (i % n)][j//n + n * (j % n)] = a[i][j]
+    svd_r = svd(X, r)
+    shape = np.shape(svd_r)
+    As = np.zeros((len(a), len(a[0])))
+    for i in range(shape[0]):
+        for j in range(shape[1]):
+            #print(i//n + n * (i % n), j//n + n * (j % n), np.shape(As))
+            num1, num2 = i // n + n * (i % n), j// n + n * (j % n)
+            if num1 < len(a)  and num2 <len(a[0]) :
+                As[num1, num2] = svd_r[i,j]
+    return As
+
+def compareSvds(matrix, rank):
+    mat = svd(matrix, rank)
+    print('Calculated svd')
+    mats = ssvd(matrix, rank)
+    print('Calculated ssvd')
+    pl.imshow(mat, cmap=cm.Greys_r)
     pl.show()
-    pl.imshow(np.real(UEVT), cmap=cm.Greys_r)
+    pl.imshow(mats, cmap=cm.Greys_r)
     pl.show()
 
 
-
-img = color.rgb2gray(io.imread('foto/5.jpg'))
-svd(img, 20)
+img = color.rgb2gray(io.imread('foto/Lenna.jpg'))
+compareSvds(img, 100)

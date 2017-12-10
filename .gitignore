@@ -4,3 +4,4 @@ utils.py
 foto/
 utils.pyc
 .gitignore
+ssvd_old.py

@@ -1,41 +1,10 @@
 import numpy as np
 from math import sqrt as math_sqrt, ceil
-
-
 import pylab as pl
 import matplotlib.cm as cm
 from random import randint
-from skimage import color
-from skimage import io
-
+from skimage import color, io
 from scipy._lib.six import xrange
-
-def blockshaped(matrix):
-    row_len = len(matrix[0])
-    col_len = len(matrix)
-    if row_len % 4 != 0:
-        matrix = matrix[:,:-(row_len % 4) ]
-    if col_len % 4 != 0:
-        matrix = matrix[:col_len-(col_len % 4)]
-    nrows = 4
-    ncols = 4
-    h, w = matrix.shape
-    return (matrix.reshape(h//nrows, nrows, -1, ncols).swapaxes(1,2).reshape(-1, nrows, ncols))
-
-
-
-def shuffle(arr):
-    blocks = blockshaped(arr)
-    row_len = len(blocks)
-    col_len = len(blocks[0]) * len(blocks[0][0])
-    must_fill = np.zeros((row_len, col_len))
-    #print("must fill ",must_fill)
-
-    for i in xrange(must_fill.shape[0]):
-        join = np.resize(blocks[i], (1, col_len))[0]
-        must_fill[i,:] = join
-    return must_fill
-
 
 def sorterForEigenValuesAndVectors(val, vect):
     """
@@ -94,21 +63,36 @@ def svd(a, r):
     #pl.show()
     return np.real(UEVT)
 
+
+def blockshaped(matrix):
+    row_len = len(matrix[0])
+    col_len = len(matrix)
+    if row_len % 4 != 0:
+        matrix = matrix[:,:-(row_len % 4) ]
+    if col_len % 4 != 0:
+        matrix = matrix[:col_len-(col_len % 4)]
+    nrows = 4
+    ncols = 4
+    h, w = matrix.shape
+    return (matrix.reshape(h//nrows, nrows, -1, ncols).swapaxes(1,2).reshape(-1, nrows, ncols))
+
+
+def shuffle(arr):
+    blocks = blockshaped(arr)
+    row_len = len(blocks)
+    col_len = len(blocks[0]) * len(blocks[0][0])
+    must_fill = np.zeros((row_len, col_len))
+    #print("must fill ",must_fill)
+
+    for i in xrange(must_fill.shape[0]):
+        join = np.resize(blocks[i], (1, col_len))[0]
+        must_fill[i,:] = join
+    return must_fill
+
+
 def ssvd(a, r):
     # X[i//n + n(i % n)][j//n + n(j % n)]
-    if len(a) != len(a[0]):
-        n = round((1.0*len(a)*len(a[0])) ** (1.0/3))
-    else:
-        n = round(math_sqrt(len(a)))
-
-    X = np.zeros((n**2, n**2))
-
-    num_blocks_fat = ceil(1.0 * len(a[0]) / n)
-    num_blocks_tall = ceil(1.0 * len(a) / n)
-
-    for i in range(num_blocks_tall):
-        for j in range(num_blocks_fat):
-            X[i*n + j%n, :] = np.resize(a[i*n : min(i*(n+1), len(a))][ j*n : min(j*(n+1), len(a[0]))], (1, n**2))
+    X = shuffle(a)
     svd_r = svd(X, r)
 
     print(svd_r, np.shape(svd_r), len(a), len(a[0]))
@@ -116,8 +100,7 @@ def ssvd(a, r):
     #shape = np.shape(svd_r)
     shape =  np.shape(svd_r)
     As = np.zeros((len(a), len(a[0])))
-    # for i in range(np.shape(svd_r)[0]):
-    #     As[:]
+
 
 
     return As

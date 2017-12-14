@@ -43,7 +43,8 @@ def make_U(sigm, matr, vect, rank):
 
 
 def svd(a, r):
-    A = np.array(a)
+    if type(a) != 'numpy.ndarray':
+        A = np.array(a)
     ATA = np.dot(A.T, A)
     eig_val, eig_vect = np.linalg.eig(ATA)
     # sort values vectors, make diag matrix
@@ -67,23 +68,30 @@ def svd(a, r):
 
 def ssvd(a, r):
     # X[i//n + n(i % n)][j//n + n(j % n)]
-    n = ceil(math_sqrt(max(len(a), len(a[0]))))
-    X = []
-    for i in range(n**2):
-        X.append([0]*(n**2))
-    for i in range(len(a)):
-        for j in range(len(a[i])):
+    if len(a) != len(a[0]):
+        n = round((1.0*len(a)*len(a[0])) ** (1.0/3))
+    else:
+        n = round(math_sqrt(len(a)))
 
-            X[i//n + n * (i % n)][j//n + n * (j % n)] = a[i][j]
+    X = np.zeros((n**2, n**2))
+
+    num_blocks_fat = ceil(1.0 * len(a[0]) / n)
+    num_blocks_tall = ceil(1.0 * len(a) / n)
+
+    for i in range(num_blocks_tall):
+        for j in range(num_blocks_fat):
+            X[i*n + j%n, :] = np.resize(a[i*n : min(i*(n+1), len(a))][ j*n : min(j*(n+1), len(a[0]))], (1, n**2))
     svd_r = svd(X, r)
-    shape = np.shape(svd_r)
+
+    print(svd_r, np.shape(svd_r), len(a), len(a[0]))
+    print(X[0][:13], a[0][:13])
+    #shape = np.shape(svd_r)
+    shape =  np.shape(svd_r)
     As = np.zeros((len(a), len(a[0])))
-    for i in range(shape[0]):
-        for j in range(shape[1]):
-            #print(i//n + n * (i % n), j//n + n * (j % n), np.shape(As))
-            num1, num2 = i // n + n * (i % n), j// n + n * (j % n)
-            if num1 < len(a)  and num2 <len(a[0]) :
-                As[num1, num2] = svd_r[i,j]
+    # for i in range(np.shape(svd_r)[0]):
+    #     As[:]
+
+
     return As
 
 def compareSvds(matrix, rank):
@@ -92,10 +100,14 @@ def compareSvds(matrix, rank):
     mats = ssvd(matrix, rank)
     print('Calculated ssvd')
     pl.imshow(mat, cmap=cm.Greys_r)
+    pl.savefig('my_Lenna.jpg')
     pl.show()
+
     pl.imshow(mats, cmap=cm.Greys_r)
     pl.show()
 
 
 img = color.rgb2gray(io.imread('foto/Lenna.jpg'))
-compareSvds(img, 100)
+pl.imshow(img, cmap=cm.Greys_r)
+pl.savefig('grey_Lenna.jpg')
+compareSvds(img, 20)

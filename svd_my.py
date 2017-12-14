@@ -93,17 +93,27 @@ def shuffle(arr):
 
 
 def ssvd(a, r):
+
     # X[i//n + n(i % n)][j//n + n(j % n)]
     X, n = shuffle(a)
+
     #print("X", X)
     svd_r = svd(X, r)
 
     #print(svd_r, np.shape(svd_r), len(a), len(a[0]))
-    #print(X[0][:13], a[0][:13])
+    #print(n)
     #shape = np.shape(svd_r)
     shape =  np.shape(svd_r)
-    As = np.zeros((len(a), len(a[0])))
-
+    shape_im = (len(a), len(a[0]))
+    n_in_col, n_in_row = shape_im[0] //n, shape_im[1] // n
+    As = np.zeros(shape_im)
+    #print(n*n_in_col)
+    #print(shape[0])
+    for i in range():
+        #print(i)
+        div_mod = (i // n_in_row, i % n_in_row)
+        #print((div_mod[0]*n, (div_mod[0] + 1)*n, div_mod[1]*n,(div_mod[1] + 1)*n)) # 529
+        As[div_mod[0]*n: (div_mod[0] + 1)*n, div_mod[1]*n:(div_mod[1] + 1)*n] = np.resize(svd_r[i], (n, n))
 
 
     return As
@@ -123,5 +133,11 @@ def compareSvds(matrix, rank):
 
 img = color.rgb2gray(io.imread('foto/Lenna.jpg'))
 pl.imshow(img, cmap=cm.Greys_r)
-pl.savefig('grey_Lenna.jpg')
+#pl.savefig('grey_Lenna.jpg')
+# l = []
+# for i in range(randint(4,20)):
+#     st = []
+#     for j in range(randint(5,20)):
+#         st.append(randint(1, 240))
+#     l.append()
 compareSvds(img, 20)

@@ -8,6 +8,34 @@ from random import randint
 from skimage import color
 from skimage import io
 
+from scipy._lib.six import xrange
+
+def blockshaped(matrix):
+    row_len = len(matrix[0])
+    col_len = len(matrix)
+    if row_len % 4 != 0:
+        matrix = matrix[:,:-(row_len % 4) ]
+    if col_len % 4 != 0:
+        matrix = matrix[:col_len-(col_len % 4)]
+    nrows = 4
+    ncols = 4
+    h, w = matrix.shape
+    return (matrix.reshape(h//nrows, nrows, -1, ncols).swapaxes(1,2).reshape(-1, nrows, ncols))
+
+
+
+def shuffle(arr):
+    blocks = blockshaped(arr)
+    row_len = len(blocks)
+    col_len = len(blocks[0]) * len(blocks[0][0])
+    must_fill = np.zeros((row_len, col_len))
+    #print("must fill ",must_fill)
+
+    for i in xrange(must_fill.shape[0]):
+        join = np.resize(blocks[i], (1, col_len))[0]
+        must_fill[i,:] = join
+    return must_fill
+
 
 def sorterForEigenValuesAndVectors(val, vect):
     """

@@ -103,7 +103,6 @@ def ssvd(a, r):
 
     X, n = shuffle(a)
 
-    # print("X", X)
     svd_r = svd(X, r)
     print('Calculated svd')
     shape = np.shape(svd_r)
@@ -130,23 +129,14 @@ def compareSvds(matrix, rank):
 
     print('Calculated ssvd')
     pl.imshow(mat, cmap=cm.Greys_r)
-    # pl.savefig('my_Lenna.jpg')
+
     pl.show()
 
     pl.imshow(mats, cmap=cm.Greys_r)
     pl.show()
 
 
-img = color.rgb2gray(io.imread('foto/4.jpg'))
+img = color.rgb2gray(io.imread('foto/1.jpg'))
 pl.imshow(img, cmap=cm.Greys_r)
-# pl.savefig('grey_4.jpg')
-# l = []
-# for i in range(randint(4,20)):
-#     st = []
-#     for j in range(randint(5,20)):
-#         st.append(randint(1, 240))
-#     l.append()
-# compareSvds(img, 20)
-# print(l)
-# (shuffle(l))
-compareSvds(img, 20)
+
+compareSvds(img, 5)

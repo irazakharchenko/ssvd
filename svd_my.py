@@ -1,8 +1,8 @@
 import numpy as np
-from math import sqrt as math_sqrt, ceil
+from math import sqrt as math_sqrt
 import pylab as pl
 import matplotlib.cm as cm
-from random import randint
+
 from skimage import color, io
 from scipy._lib.six import xrange
 
@@ -54,14 +54,9 @@ def svd(a, r):
     S = np.array([math_sqrt(x) for x in eig_val])
     E = makeDiagonalFromValues(S, np.shape(VT)[0], min_len)
     U = make_U(S, A, eig_vect, min_len)
-    # print("U", np.shape(U), "\nE", np.shape(E), "\nVT", np.shape(VT))
+
     UE = np.dot(U, E)
     UEVT = np.dot(UE, VT)
-    # print("A", A, "\nmaybe A", np.real(UEVT))
-    # pl.imshow(A, cmap=cm.Greys_r)
-    # pl.show()
-    # pl.imshow(np.real(UEVT), cmap=cm.Greys_r)
-    # pl.show()
 
     return np.real(UEVT)
 
@@ -87,7 +82,6 @@ def shuffle(arr):
     row_len = len(blocks)
     col_len = len(blocks[0]) * len(blocks[0][0])
     must_fill = np.zeros((row_len, col_len))
-    # print("must fill ",must_fill)
 
     for i in xrange(must_fill.shape[0]):
         join = np.resize(blocks[i], (1, col_len))[0]
@@ -100,9 +94,13 @@ def ssvd(a, r):
     row_len, col_len = len(a[0]), len(a)
     if row_len != col_len:
         min_ = min(col_len, row_len)
-        col_len = min_
-        row_len = min_
-        a = a[:min_, :min_]
+        if min_ != col_len:
+            k = row_len - min_
+            a = a[:, k // 2:min_ + k // 2]
+        else:
+            k = col_len - min_
+            a = a[k // 2:min_ + k // 2]
+
     X, n = shuffle(a)
 
     # print("X", X)
@@ -139,9 +137,9 @@ def compareSvds(matrix, rank):
     pl.show()
 
 
-img = color.rgb2gray(io.imread('foto/d.jpg'))
+img = color.rgb2gray(io.imread('foto/4.jpg'))
 pl.imshow(img, cmap=cm.Greys_r)
-# pl.savefig('grey_Lenna.jpg')
+# pl.savefig('grey_4.jpg')
 # l = []
 # for i in range(randint(4,20)):
 #     st = []
@@ -151,4 +149,4 @@ pl.imshow(img, cmap=cm.Greys_r)
 # compareSvds(img, 20)
 # print(l)
 # (shuffle(l))
-compareSvds(img, 14)
+compareSvds(img, 20)
